@@ -243,6 +243,8 @@ impl MachInstEmit for Inst {
         if res.is_none() {
             // If we can't lets emit it as a normal instruction
             self.emit_uncompressed(sink, emit_info, state, &mut start_off);
+        } else {
+            panic!("Compressed instruction generated");
         }
 
         // We exclude br_table and return call from these checks since they emit
