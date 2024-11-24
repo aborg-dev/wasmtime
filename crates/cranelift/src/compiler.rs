@@ -820,6 +820,14 @@ impl FunctionCompiler<'_> {
         } else {
             1
         };
+        if let Some(vcode) = &compiled_code.vcode {
+            println!(
+                "name={} len={}",
+                context.func.name,
+                compiled_code.buffer.data().len()
+            );
+            println!("{}", vcode);
+        }
 
         let alignment = compiled_code.buffer.alignment.max(preferred_alignment);
         let mut compiled_function = CompiledFunction::new(

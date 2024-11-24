@@ -30,6 +30,31 @@ use wasmtime_environ::{Compiler, Unsigned};
 
 const TEXT_SECTION_NAME: &[u8] = b".text";
 
+use std::fmt::Write;
+
+fn print_hex_grouped(data: &[u8], group_size: usize) {
+    let mut s = String::new();
+    let mut chunk = String::new();
+
+    for (i, byte) in data.iter().enumerate() {
+        let mut sub_chunk = String::new();
+        write!(&mut sub_chunk, "{:02x}", byte).unwrap();
+        sub_chunk = sub_chunk.chars().rev().collect();
+        chunk.push_str(&sub_chunk);
+        if (i + 1) % group_size == 0 {
+            chunk = chunk.chars().rev().collect();
+            s.push_str(&chunk);
+            s.push('\n');
+            chunk.clear();
+        }
+    }
+    if !chunk.is_empty() {
+        s.push_str(&chunk);
+    }
+
+    println!("{}", s);
+}
+
 /// A helper structure used to assemble the final text section of an executable,
 /// plus unwinding information and other related details.
 ///
@@ -111,6 +136,10 @@ impl<'a> ModuleTextBuilder<'a> {
         resolve_reloc_target: impl Fn(wasmtime_environ::RelocationTarget) -> usize,
     ) -> (SymbolId, Range<u64>) {
         let body = compiled_func.buffer.data();
+        if name == "wasm[0]::function[9]::_ZN36_$LT$T$u20$as$u20$core..any..Any$GT$7type_id17h6f861a8b8611e61fE" {
+            println!("{name}");
+            print_hex_grouped(&body, 4);
+        }
         let alignment = compiled_func.alignment;
         let body_len = body.len() as u64;
         let off = self
